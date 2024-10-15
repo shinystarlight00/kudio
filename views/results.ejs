@@ -674,7 +674,7 @@
                 console.log(result);
                 if (result.status) {
                   customerID = result.customer;
-                  username = result.username;
+                  username = first_name + last_name + Math.floor(1000 + Math.random() * 9000).toString();
                   showConfirmation(customerID, username, first_name, last_name);
                 } else {
                   for (const key in result.error) {
