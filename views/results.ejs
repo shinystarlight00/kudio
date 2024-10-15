@@ -479,7 +479,10 @@
           .getElementById("checkButton")
           .addEventListener("click", async () => {
             setProgressBarStep("Domain");
-            const domain = document.getElementById("domainInput").value.trim();
+            const domain = document
+              .getElementById("domainInput")
+              .value.trim()
+              .toLowerCase();
             const resultsContainer =
               document.getElementById("resultsContainer");
 
@@ -674,7 +677,10 @@
                 console.log(result);
                 if (result.status) {
                   customerID = result.customer;
-                  username = first_name + last_name + Math.floor(1000 + Math.random() * 9000).toString();
+                  username =
+                    first_name +
+                    last_name +
+                    Math.floor(1000 + Math.random() * 9000).toString();
                   showConfirmation(customerID, username, first_name, last_name);
                 } else {
                   for (const key in result.error) {
@@ -731,7 +737,6 @@
           .addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            hideContainer("confirmationContainer");
             showLoader();
 
             const { paymentMethod, error } = await stripe.createPaymentMethod({
@@ -758,32 +763,78 @@
                 },
                 body: JSON.stringify({
                   paymentMethodId: paymentMethod.id,
-                  domain: selectedDomainName,
-                  customer_id: customerID,
                   price: totalPrice,
                 }),
               });
 
-              const response_data = await response.json();
-              console.log("===============>response data:", response_data);
+              const { clientSecret, error } = await response.json();
+              console.log("received client secret:", clientSecret);
 
-              console.log(
-                "===============> domain register result ",
-                response_data.domainData.status
-              );
-
-              if (response_data.domainData.status) {
+              if (error) {
                 hideLoader();
-                showSuccessNotification();
+                alert("Error creating payment intent");
+                return;
               } else {
-                hideLoader();
-                alert(
-                  "Domain registration failed! " +
-                    response_data.domainData.error_message
-                );
+                const { error, paymentIntent } =
+                  await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                      card: cardElement,
+                      billing_details: {
+                        name: document.getElementById("cardHolderName").value,
+                      },
+                    },
+                  });
 
-                showContainer("confirmationContainer");
+                if (error) {
+                  hideLoader();
+                  alert("Payment failed: ", error.message);
+                  return;
+                } else if (paymentIntent.status === "succeeded") {
+                  hideLoader();
+                  console.log("Payment succeeded!\n", paymentIntent);
+
+                  const response = await fetch(`/register-domain`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      domain: selectedDomainName,
+                      customer_id: customerID,
+                    }),
+                  });
+
+                  const { registerStatus } = response.json();
+                  if (registerStatus) {
+                    showSuccessNotification();
+                  } else {
+                    hideContainer("confirmationContainer");
+                    alert("Domain registration failed");
+                  }
+                }
               }
+
+              // const response_data = await response.json();
+              // console.log("===============>response data:", response_data);
+
+              // console.log(
+              //   "===============> domain register result ",
+              //   response_data.domainData.status
+              // );
+
+              // if (response_data.domainData.status) {
+              //   hideLoader();
+              //   showSuccessNotification();
+              // } else {
+              //   hideLoader();
+              //   alert(
+              //     "Domain registration failed! " +
+              //       response_data.domainData.error_message
+              //   );
+
+              //   showContainer("confirmationContainer");
+              // }
+
               // } else {
               //   alert(
               //     "Domain registration failed!" +
