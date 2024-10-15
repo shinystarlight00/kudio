@@ -27,6 +27,10 @@
                 {
                     "key": "Content-Security-Policy",
                     "value": "frame-ancestors https://kudio.co.uk;
+                },
+               {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "https://your-cms-domain.com&quot;
                 }
             ]
         }
