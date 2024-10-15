@@ -101,7 +101,7 @@ app.get("/domain-availability", async (req, res) => {
 // Payment endpoint (as per your setup)
 app.post("/create-payment-intent", async (req, res) => {
   // const { amount } = req.query;
-  const { paymentMethodId, domain, customer_id, price } = req.body;
+  const { paymentMethodId, price } = req.body;
 
   console.log("=================> create payment intent ", req.body);
 
@@ -117,7 +117,6 @@ app.post("/create-payment-intent", async (req, res) => {
       currency: "gbp",
       payment_method: paymentMethodId,
       confirm: true,
-      payment_method_types: ["card"],
       metadata: { country: "GB" },
       automatic_payment_methods: {
         enabled: true,
@@ -125,25 +124,24 @@ app.post("/create-payment-intent", async (req, res) => {
       },
     });
 
-    if (paymentIntent.status === "succeeded") {
-      console.log("=================> Payment Intent Success: ", paymentIntent);
+    console.log("============> Payment Intent: ", paymentIntent);
 
-      try {
-        const response = await registerDomain(domain, customer_id);
-
-        res.json(response);
-      } catch (error) {
-        console.error("Error registering domain:", error);
-        res.status(500).json({ error: "Failed to register domain." });
-      }
+    if (paymentIntent.status === "requires_action") {
+      res.json({ clientSecret: paymentIntent.client_secret });
     } else {
-      console.log("============> payment error");
-      res.status(400).json({ error: "Payment failed." });
+      res.json({ error: "Payment intent failed." });
     }
   } catch (error) {
     console.log("Error creating payment intent:", error);
     res.status(500).json({ error: "Payment processing failed." });
   }
+});
+
+app.post("/register-domain", async (req, res) => {
+  const { domain, customer_id } = req.body;
+
+  const registerStatus = await registerDomain(domain, customer_id);
+  res.json({ registerStatus });
 });
 
 app.post("/registrant", async (req, res) => {
@@ -334,25 +332,29 @@ async function registerDomain(domain, customerId) {
   const requestId = generateRequestID();
   const signature = generateSignature(requestId, apiKey);
   const registerUrl = constants.urls.domainRegister;
+  try {
+    const domainResponse = await fetch(registerUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+        "Api-Request-Id": requestId,
+        "Api-Signature": signature,
+      },
+      body: JSON.stringify({
+        domain_name: domain,
+        customer_id: customerId,
+        period: 12,
+      }),
+    });
+    const domainData = await domainResponse.json();
+    console.log("============> domainData API Response:", domainData); // Log API response for debugging
 
-  const domainResponse = await fetch(registerUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      accept: "application/json",
-      "Api-Request-Id": requestId,
-      "Api-Signature": signature,
-    },
-    body: JSON.stringify({
-      domain_name: domain,
-      customer_id: customerId,
-      period: 12,
-    }),
-  });
-  const domainData = await domainResponse.json();
-  console.log("============> domainData API Response:", domainData); // Log API response for debugging
-
-  return { domainData };
+    return domainData.status;
+  } catch (error) {
+    console.log("Error registering domain:", error);
+    return false;
+  }
 }
 
 // Start the server
