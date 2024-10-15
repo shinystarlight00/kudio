@@ -332,9 +332,9 @@
         <label for="postCode">Post Code</label>
         <input type="text" id="postCode" required />
       </div>
-      <div class="form-group hidden">
+      <div class="form-group">
         <label for="countryCode">Country Code</label>
-        <input type="text" id="countryCode" value="44" required />
+        <input type="text" id="countryCode" value="GB" disabled required />
       </div>
       <div class="form-group">
         <label for="phone">Phone Number</label>
@@ -344,7 +344,7 @@
         <label for="email">Email</label>
         <input type="email" id="email" required />
       </div>
-      <div class="form-group hidden">
+      <div class="form-group">
         <label for="accountType">Account Type</label>
         <input
           type="text"
@@ -425,9 +425,9 @@
     </div>
 
     <script>
-      const stripe = Stripe(
-        "pk_test_51IZk6CLWcouNeT9dn9WZIcKUsdj5Pgmg2w1GOuQxfHwrI0s4VEGIjnl0fUiSKoV3S95IVPxvxCD7wt27rfxSIy3200RPorXY4R"
-      );
+      const stripePublicKey = "<%= stripePublicKey %>";
+      const stripe = Stripe(stripePublicKey);
+      console.log("===============> stripe public key", stripePublicKey);
 
       const elements = stripe.elements();
       const cardElement = elements.create("card");
@@ -617,6 +617,9 @@
           } else {
             console.log("Submitting registrant form...");
 
+            // const username = document.getElementById("username").value;
+            // const password = document.getElementById("password").value;
+
             const first_name = document.getElementById("firstName").value;
             const last_name = document.getElementById("lastName").value;
             const address = document.getElementById("address").value;
@@ -633,10 +636,6 @@
             const email = document.getElementById("email").value;
 
             const account_type = document.getElementById("accountType").value;
-
-            const username = generateUserName(first_name, last_name);
-            // const password = document.getElementById("password").value;
-
             // const business_name = document.getElementById("businessName").value;
             // const business_number_type =
             //   document.getElementById("businessNumberType").value;
@@ -644,7 +643,6 @@
             //   document.getElementById("businessNumber").value;
 
             const data = {
-              username,
               first_name,
               last_name,
               address,
@@ -676,13 +674,8 @@
                 console.log(result);
                 if (result.status) {
                   customerID = result.customer;
-                  const resusername = result.username;
-                  showConfirmation(
-                    customerID,
-                    resusername,
-                    first_name,
-                    last_name
-                  );
+                  username = result.username;
+                  showConfirmation(customerID, username, first_name, last_name);
                 } else {
                   for (const key in result.error) {
                     alert("Failed to register customer: " + result.error[key]);
@@ -691,13 +684,6 @@
               });
           }
         };
-
-        function generateUserName(first_name, last_name) {
-          const randomNumber = Math.floor(1000 + Math.random() * 9000);
-          const result = first_name + last_name + randomNumber;
-
-          return result;
-        }
 
         function setProgressBarStep(step) {
           const steps = ["Domain", "Register", "Confirm"];
@@ -757,7 +743,9 @@
             });
 
             if (error) {
+              hideLoader();
               console.error("Error creating payment method:", error);
+              alert("Error creating payment method:", error.message);
               document.getElementById("card-errors").innerText = error.message;
               return;
             } else {
