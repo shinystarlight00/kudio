@@ -21,8 +21,11 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 app.get("/", (req, res) => {
-  res.render("results");
+  res.render("results", { stripePublicKey: process.env.STRIPE_PUBLIC_KEY });
 });
+
+// Serve static files from 'public'
+app.use(express.static("public"));
 
 // Parse JSON bodies
 app.use(express.json());
@@ -114,6 +117,8 @@ app.post("/create-payment-intent", async (req, res) => {
       currency: "gbp",
       payment_method: paymentMethodId,
       confirm: true,
+      payment_method_types: ["card"],
+      metadata: { country: "GB" },
       automatic_payment_methods: {
         enabled: true,
         allow_redirects: "never",
