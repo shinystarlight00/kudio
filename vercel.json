@@ -15,24 +15,5 @@
       "src": "/(.*)",
       "dest": "/server.js"
     }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "ALLOW-FROM https://kudio.co.uk"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors https://kudio.co.uk"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "https://kudio.co.uk"
-        }
-      ]
-    }
   ]
 }
