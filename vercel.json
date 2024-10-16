@@ -16,16 +16,4 @@
                         "dest": "/server.js"
                 }
         ],
-        "headers": [
-                {
-                        "src": "/(.*)",
-                        "key": "Content-Security-Policy",
-                        "value": "frame-ancestors 'self' https://kudio.co.uk"
-                },
-                {
-                       "src": "/(.*)",
-                        "key": "x-vercel-protection-bypass",
-                        "value": "sncTiOAunzNTPkCtK5IyVWbK23qbL6t9"
-                }
-        ]
 }
