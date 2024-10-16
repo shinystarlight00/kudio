@@ -23,6 +23,10 @@
         {
           "key": "Content-Security-Policy",
           "value": "frame-ancestors https://kudio.co.uk"
+        },
+        {
+          "key": "x-vercel-protection-bypass",
+          "value": "sncTiOAunzNTPkCtK5IyVWbK23qbL6t9"
         }
       ]
     }
