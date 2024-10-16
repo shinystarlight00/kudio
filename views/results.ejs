@@ -787,7 +787,7 @@
 
                 if (error) {
                   hideLoader();
-                  alert("Payment failed: ", error.message);
+                  alert("Payment failed.", error.message);
                   return;
                 } else if (paymentIntent.status === "succeeded") {
                   hideLoader();
