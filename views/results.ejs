@@ -23,13 +23,14 @@
         display: flex;
         align-items: center;
         margin-top: 1vh;
+        font-size: 0.8em;
       }
 
       .prefix {
         font-size: 1em;
         padding: 2%;
         background: #eee;
-        width: 15%;
+        width: auto;
       }
 
       input {
@@ -37,7 +38,6 @@
         border: 0px solid #ccc;
         flex-grow: 1;
         font-size: 1em;
-        width: 50%;
       }
 
       button {
@@ -48,7 +48,7 @@
         border-radius: 0px;
         cursor: pointer;
         font-size: 1em;
-        width: 25%;
+        width: auto;
       }
 
       button:hover {
@@ -122,6 +122,7 @@
         cursor: pointer;
         margin-left: 2%;
         font-size: 0.8em;
+        width: auto;
       }
 
       .buy-button:hover {
@@ -245,6 +246,21 @@
 
       .text-center {
         text-align: center;
+      }
+
+      .email-hosting {
+        background-color: #eee;
+        border: 1px solid #ccc;
+        display: flex;
+        padding: 4% 3%;
+      }
+
+      .email-hosting-element {
+        background-color: white;
+        width: 25%;
+        margin: auto;
+        padding: 2%;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
       }
 
       @keyframes spin {
@@ -379,7 +395,7 @@
     </div>
 
     <!-- Confirmation Container -->
-    <div id="confirmationContainer" class="confirmation-container hidden">
+    <div id="confirmationContainer" class="confirmation-container">
       <h2>Confirmation</h2>
       <div class="confirmation-box" id="domainConfirmation">
         <strong>Domain Confirmation</strong><br />
@@ -393,6 +409,90 @@
         Username: Smith9876<br />
         Name: Sample Smith
       </div>
+      <div>
+        <h3 style="margin-bottom: 0%">Add Business Emails</h3>
+        <p style="margin: 0%">
+          Get professional email address along with your domain
+        </p>
+        <p style="margin-top: 0%">example: info@kudio.co.uk</p>
+        <div class="email-hosting">
+          <div class="email-hosting-element">
+            <h3>Basic</h3>
+            <p style="margin: 2% 0%">1 Email Account</p>
+            <p style="margin: 2% 0%">2GB Storage</p>
+            <p style="margin: 2% 0%">25Mb Attachment</p>
+            <div style="display: flex; margin-top: 10%">
+              <div>
+                <input
+                  type="checkbox"
+                  id="basicEmail"
+                  style="transform: scale(1.5); margin-right: 10px"
+                />
+              </div>
+              <div>
+                <p style="color: #38b6ff; margin: 0; font-weight: bold">
+                  £19.20<span style="font-size: 0.8em; color: black">
+                    /per year</span
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="email-hosting-element">
+            <h3>Standard</h3>
+            <p style="margin: 2% 0%">10 Email Account</p>
+            <p style="margin: 2% 0%">2GB Storage</p>
+            <p style="margin: 2% 0%">25Mb Attachment</p>
+            <div style="display: flex; margin-top: 10%">
+              <div>
+                <input
+                  type="checkbox"
+                  id="standardEmail"
+                  style="transform: scale(1.5); margin-right: 10px"
+                />
+              </div>
+              <div>
+                <p style="color: #38b6ff; margin: 0; font-weight: bold">
+                  £43.20<span style="font-size: 0.8em; color: black">
+                    /per year</span
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="email-hosting-element">
+            <h3>Business</h3>
+            <p style="margin: 2% 0%">Unlimited Email Account</p>
+            <p style="margin: 2% 0%">2GB Storage</p>
+            <p style="margin: 2% 0%">25Mb Attachment</p>
+            <div style="display: flex; margin-top: 10%">
+              <div>
+                <input
+                  type="checkbox"
+                  id="businessEmail"
+                  style="transform: scale(1.5); margin-right: 10px"
+                />
+              </div>
+              <div>
+                <p style="color: #38b6ff; margin: 0; font-weight: bold">
+                  £69.99<span style="font-size: 0.8em; color: black">
+                    /per year</span
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p>Domain: www.<span id="selectedDomainNameConfirmation"></span></p>
+        <p>Email Hosting: <span id="selectedEmailHosting"></span></p>
+        <p id="totalPriceElement">
+          Total: £<span id="totalPrice"></span> Per Year
+        </p>
+      </div>
+
       <div id="paymentForm" class="form-container">
         <h2>Payment Information</h2>
         <div class="form-info" id="selectedDomainInfo"></div>
@@ -432,6 +532,68 @@
     </div>
 
     <script>
+      const basicEmailCheckbox = document.getElementById("basicEmail");
+      const standardEmailCheckbox = document.getElementById("standardEmail");
+      const businessEmailCheckbox = document.getElementById("businessEmail");
+
+      const selectedEmailHosting = document.getElementById(
+        "selectedEmailHosting"
+      );
+      let selectedEmailPrice = 0;
+
+      basicEmailCheckbox.addEventListener("change", function () {
+        if (this.checked) {
+          standardEmailCheckbox.checked = false;
+          businessEmailCheckbox.checked = false;
+          selectedEmailHosting.textContent = "Basic";
+          selectedEmailPrice = 19.2;
+          document.getElementById("totalPrice").innerText = (
+            parseFloat(selectedDomainPrice) + parseFloat(selectedEmailPrice)
+          ).toFixed(2);
+        } else {
+          selectedEmailHosting.textContent = "";
+          selectedEmailPrice = 0;
+          document.getElementById("totalPrice").innerText = (
+            parseFloat(selectedDomainPrice) + parseFloat(selectedEmailPrice)
+          ).toFixed(2);
+        }
+      });
+
+      standardEmailCheckbox.addEventListener("change", function () {
+        if (this.checked) {
+          basicEmailCheckbox.checked = false;
+          businessEmailCheckbox.checked = false;
+          selectedEmailHosting.textContent = "Standard";
+          selectedEmailPrice = 43.2;
+          document.getElementById("totalPrice").innerText = (
+            parseFloat(selectedDomainPrice) + parseFloat(selectedEmailPrice)
+          ).toFixed(2);
+        } else {
+          selectedEmailHosting.textContent = "";
+          selectedEmailPrice = 0;
+          document.getElementById("totalPrice").innerText = (
+            parseFloat(selectedDomainPrice) + parseFloat(selectedEmailPrice)
+          ).toFixed(2);
+        }
+      });
+
+      businessEmailCheckbox.addEventListener("change", function () {
+        if (this.checked) {
+          basicEmailCheckbox.checked = false;
+          standardEmailCheckbox.checked = false;
+          selectedEmailHosting.textContent = "Business";
+          selectedEmailPrice = 69.99;
+          document.getElementById("totalPrice").innerText = (
+            parseFloat(selectedDomainPrice) + parseFloat(selectedEmailPrice)
+          ).toFixed(2);
+        } else {
+          selectedEmailHosting.textContent = "";
+          selectedEmailPrice = 0;
+          document.getElementById("totalPrice").innerText = (
+            parseFloat(selectedDomainPrice) + parseFloat(selectedEmailPrice)
+          ).toFixed(2);
+        }
+      });
       const stripePublicKey = "<%= stripePublicKey %>";
       const stripe = Stripe(stripePublicKey);
       console.log("===============> stripe public key", stripePublicKey);
@@ -737,6 +899,16 @@
           Name: ${document.getElementById("firstName").value} ${
             document.getElementById("lastName").value
           }`;
+          document.getElementById("selectedDomainNameConfirmation").innerText =
+            selectedDomainName;
+          document.getElementById("totalPrice").innerText = (
+            parseFloat(selectedEmailPrice) + parseFloat(selectedDomainPrice)
+          ).toFixed(2);
+          console.log("seleted email price type: ", typeof selectedEmailPrice);
+          console.log(
+            "seleted domain price type: ",
+            typeof selectedDomainPrice
+          );
         }
 
         document
@@ -761,7 +933,11 @@
               document.getElementById("card-errors").innerText = error.message;
               return;
             } else {
-              const totalPrice = selectedDomainPrice * 100; // Convert to pence
+              const totalPrice =
+                ((parseFloat(selectedDomainPrice) || 0) +
+                  (parseFloat(selectedEmailPrice) || 0)) *
+                100;
+              console.log("totalprice stripe ===============>", totalPrice);
 
               const response = await fetch(`/create-payment-intent`, {
                 method: "POST",
