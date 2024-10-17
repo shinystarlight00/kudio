@@ -138,10 +138,14 @@ app.post("/create-payment-intent", async (req, res) => {
 });
 
 app.post("/register-domain", async (req, res) => {
-  const { domain, customer_id } = req.body;
+  const { domain, customer_id, plan_id } = req.body;
 
-  const registerStatus = await registerDomain(domain, customer_id);
-  res.json({ registerStatus });
+  const { registerStatus, error } = await registerDomain(
+    domain,
+    customer_id,
+    plan_id
+  );
+  res.json({ registerStatus, error });
 });
 
 app.post("/registrant", async (req, res) => {
@@ -320,7 +324,7 @@ async function createRegistration(registrantData) {
   }
 }
 
-async function registerDomain(domain, customerId) {
+async function registerDomain(domain, customerId, plan_id) {
   console.log(
     "=================> registering domain & customerID: ",
     domain,
@@ -332,6 +336,7 @@ async function registerDomain(domain, customerId) {
   const requestId = generateRequestID();
   const signature = generateSignature(requestId, apiKey);
   const registerUrl = constants.urls.domainRegister;
+  const emailHostingUrl = constants.urls.emailPackageRegister;
   try {
     const domainResponse = await fetch(registerUrl, {
       method: "POST",
@@ -350,10 +355,43 @@ async function registerDomain(domain, customerId) {
     const domainData = await domainResponse.json();
     console.log("============> domainData API Response:", domainData); // Log API response for debugging
 
-    return domainData.status;
+    if (domainData.status && plan_id) {
+      try {
+        const emailHostingResponse = await fetch(emailHostingUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            accept: "application/json",
+            "Api-Request-Id": requestId,
+            "Api-Signature": signature,
+            "Reseller-ID": resellerId,
+          },
+          body: JSON.stringify({
+            domain_name: domain,
+            plan_id: plan_id,
+            customer_id: customerId,
+            period: 12,
+          }),
+        });
+        const emailHostingData = await emailHostingResponse.json();
+        console.log(
+          "============> emailHostingData API Response:",
+          emailHostingData
+        ); // Log API response for debugging
+
+        if (emailHostingData.status === true)
+          return { status: true, error: "" };
+        else return { status: false, error: emailHostingData.error_message };
+      } catch (error) {
+        console.error("Error registering email hosting:", error);
+        return { status: false, error: "Failed to register email hosting" };
+      }
+    } else if (domainData.status === false) {
+      return { status: false, error: domainData.error_message };
+    }
   } catch (error) {
-    console.log("Error registering domain:", error);
-    return false;
+    console.error("Error registering domain:", error);
+    return { status: false, error: "Failed to register domain" };
   }
 }
 
