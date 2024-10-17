@@ -8,7 +8,7 @@
       body {
         font-family: Arial, sans-serif;
         height: 100vh;
-        background-color: #f4f4f4;
+        background-color: #fff;
       }
 
       .widget {
@@ -27,27 +27,29 @@
       }
 
       .prefix {
-        font-size: 1em;
-        padding: 2%;
+        font-size: 12px;
+        padding: 1.5%2%;
         background: #eee;
         width: auto;
       }
 
       input {
-        padding: 2%;
-        border: 0px solid #ccc;
+        padding: 1.5%;
+        border: 1px solid #757575;
+        border-radius: 5px;
         flex-grow: 1;
-        font-size: 1em;
+        font-size: 12px;
+        margin: 5px;
       }
 
       button {
-        padding: 2%;
+        padding: 1.7%;
         background-color: #003b44;
         color: white;
         border: none;
         border-radius: 0px;
         cursor: pointer;
-        font-size: 1em;
+        font-size: 12px;
         width: auto;
       }
 
@@ -56,11 +58,7 @@
       }
 
       .results-container {
-        margin: 5%;
-        border: 1px solid grey;
         padding: 5%;
-        border-radius: 8px;
-        background-color: white;
         display: none;
       }
 
@@ -206,10 +204,7 @@
       .confirmation-container {
         max-width: 100%;
         margin: 1%;
-        border: 1px solid grey;
         padding: 2%;
-        border-radius: 8px;
-        background-color: white;
         display: none;
       }
 
@@ -249,8 +244,6 @@
       }
 
       .email-hosting {
-        background-color: #eee;
-        border: 1px solid #ccc;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
@@ -271,6 +264,18 @@
           flex-basis: 100%; /* Stack the elements vertically for very small screens */
           margin: 3%;
           padding: 10%;
+        }
+      }
+
+      /* Media query for screens smaller than 400px */
+      @media (max-width: 500px) {
+        .domain-row {
+          display: block;
+        }
+
+        .inner-status {
+          display: flex;
+          justify-content: space-between;
         }
       }
 
@@ -298,6 +303,7 @@
       <div class="progress-bar" id="progressBar">
         <div class="progress-step" id="progressDomain">Domain</div>
         <div class="progress-step" id="progressRegister">Register</div>
+        <div class="progress-step" id="progressEmail">Email</div>
         <div class="progress-step" id="progressConfirm">Confirm</div>
       </div>
 
@@ -315,29 +321,7 @@
 
     <!-- Registrant Form -->
     <div id="registrantForm" class="results-container hidden">
-      <h1>Register</h1>
-      <!-- <h3>Login Below</h3>
-      <div class="form-group">
-        <label for="login-username">Username</label>
-        <input type="text" id="login-username" required />
-      </div>
-      <div class="form-group">
-        <label for="login-password">Password</label>
-        <input type="password" id="login-password" required />
-      </div>
-      <button id="submitLoginButton" onclick="submitLoginForm()">Login</button> -->
-      <!-- </div>
-
-    <div id="registrantForm" class="results-container hidden"> -->
-      <h3>Register Below</h3>
-      <!-- <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" />
-      </div> -->
+      <h3>Register</h3>
       <div class="form-group">
         <label for="firstName">First Name</label>
         <input type="text" id="firstName" required />
@@ -388,46 +372,22 @@
           required
         />
       </div>
-      <!-- <div class="form-group">
-        <label for="businessName">Business Name</label>
-        <input type="text" id="businessName" />
-      </div>
-      <div class="form-group">
-        <label for="businessNumberType">Business Number Type (e.g., ABN)</label>
-        <input type="text" id="businessNumberType" />
-      </div>
-      <div class="form-group">
-        <label for="businessNumber">Business Number</label>
-        <input type="text" id="businessNumber" />
-      </div> -->
       <button id="submitRegistrantButton" onclick="submitRegisterForm()">
         Create
       </button>
     </div>
 
-    <!-- Confirmation Container -->
-    <div id="confirmationContainer" class="confirmation-container">
-      <h2>Confirmation</h2>
-      <div class="confirmation-box" id="domainConfirmation">
-        <strong>Domain Confirmation</strong><br />
-        Domain: www.' + selectedDomainName + '<br />Price: £' +
-        selectedDomainPrice + ' Per Year<br />
-        Auto Renew
-      </div>
-      <div class="confirmation-box" id="accountCreated">
-        <strong>Account Created</strong><br />
-        Customer ID: M12097302<br />
-        Username: Smith9876<br />
-        Name: Sample Smith
-      </div>
-      <div>
-        <h3 style="margin-bottom: 0%">Add Business Emails</h3>
-        <p style="margin: 0%">
-          Get professional email address along with your domain
-        </p>
-        <p style="margin-top: 0%">example: info@kudio.co.uk</p>
-        <div class="email-hosting">
-          <div class="email-hosting-element">
+    <!-- EmailHosting Container -->
+
+    <div id="emailContainer" class="confirmation-container">
+      <h3 style="margin-bottom: 0%">Add Business Emails</h3>
+      <p style="padding: 2%">
+        Get professional email address along with your domain<br />example:
+        info@kudio.co.uk
+      </p>
+      <div class="email-hosting">
+        <label class="email-hosting-element">
+          <div>
             <h3>Basic</h3>
             <p style="margin: 2% 0%">1 Email Account</p>
             <p style="margin: 2% 0%">2GB Storage</p>
@@ -449,7 +409,9 @@
               </div>
             </div>
           </div>
-          <div class="email-hosting-element">
+        </label>
+        <label class="email-hosting-element">
+          <div>
             <h3>Standard</h3>
             <p style="margin: 2% 0%">10 Email Account</p>
             <p style="margin: 2% 0%">2GB Storage</p>
@@ -471,7 +433,9 @@
               </div>
             </div>
           </div>
-          <div class="email-hosting-element">
+        </label>
+        <label class="email-hosting-element">
+          <div>
             <h3>Business</h3>
             <p style="margin: 2% 0%">Unlimited Email Account</p>
             <p style="margin: 2% 0%">2GB Storage</p>
@@ -493,10 +457,28 @@
               </div>
             </div>
           </div>
-        </div>
+        </label>
+      </div>
+      <button onclick="showConfirmation()">Continue</button>
+    </div>
+
+    <!-- Confirmation Container -->
+    <div id="confirmationContainer" class="confirmation-container">
+      <h3>Confirmation</h3>
+      <div class="confirmation-box" id="domainConfirmation">
+        <strong>Domain Confirmation</strong><br />
+        Domain: www.' + selectedDomainName + '<br />Price: £' +
+        selectedDomainPrice + ' Per Year<br />
+        Auto Renew
+      </div>
+      <div class="confirmation-box" id="accountCreated">
+        <strong>Account Created</strong><br />
+        Customer ID: M12097302<br />
+        Username: Smith9876<br />
+        Name: Sample Smith
       </div>
 
-      <div>
+      <div class="confirmation-box">
         <p style="margin-bottom: 0%">
           Domain: www.<span id="selectedDomainNameConfirmation"></span>
         </p>
@@ -509,7 +491,7 @@
       </div>
 
       <div id="paymentForm" class="form-container">
-        <h2>Payment Information</h2>
+        <h3>Payment Information</h3>
         <div class="form-info" id="selectedDomainInfo"></div>
         <div class="form-info" id="selectedEmailPackageInfo"></div>
         <div class="thin-line"></div>
@@ -556,6 +538,10 @@
       );
       let selectedEmailPrice = 0;
       let selectedEmailPlan = 0;
+
+      let first_name = "";
+      let last_name = "";
+      let username = "";
 
       basicEmailCheckbox.addEventListener("change", function () {
         if (this.checked) {
@@ -865,14 +851,14 @@
                 return result;
               })
               .then((result) => {
-                console.log(result);
                 if (result.status) {
                   customerID = result.customer;
                   username =
                     first_name +
                     last_name +
                     Math.floor(1000 + Math.random() * 9000).toString();
-                  showConfirmation(customerID, username, first_name, last_name);
+
+                  showEmailHosting();
                 } else {
                   for (const key in result.error) {
                     alert("Failed to register customer: " + result.error[key]);
@@ -883,7 +869,7 @@
         };
 
         function setProgressBarStep(step) {
-          const steps = ["Domain", "Register", "Confirm"];
+          const steps = ["Domain", "Register", "Email", "Confirm"];
           steps.forEach(function (currentStep) {
             const element = document.getElementById(`progress${currentStep}`);
             if (currentStep === step) {
@@ -902,9 +888,16 @@
           selectedDomainDiv.classList.remove("hidden");
         }
 
-        function showConfirmation(customerID, username, first_name, last_name) {
-          setProgressBarStep("Confirm");
+        function showEmailHosting() {
+          setProgressBarStep("Email");
           hideContainer("registrantForm");
+
+          showContainer("emailContainer");
+        }
+
+        window.showConfirmation = function () {
+          setProgressBarStep("Confirm");
+          hideContainer("emailContainer");
 
           showContainer("confirmationContainer");
 
@@ -931,7 +924,7 @@
             "seleted domain price type: ",
             typeof selectedDomainPrice
           );
-        }
+        };
 
         document
           .getElementById("stripePaymentForm")
